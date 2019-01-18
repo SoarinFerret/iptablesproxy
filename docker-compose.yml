@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  test:
+    image: soarinferret/iptablesproxy
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - "SERVERIP=172.217.9.46"
+      - "SERVERPORT=80"
+      - "HOSTPORT=80"
+    expose:
+      - '8080'
