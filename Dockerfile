@@ -1,4 +1,4 @@
-from alpine:latest
+FROM alpine:latest
 
 # Copy Startup Script
 COPY start.sh /start.sh
