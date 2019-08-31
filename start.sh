@@ -1,11 +1,22 @@
 #!/bin/sh
 
-if [ -z "$SERVERIP" -o -z "$SERVERPORT" -o -z "$HOSTPORT" ]; then
-  echo "Variables SERVERIP, SERVERPORT, and HOSTPORT must be set."; exit;
+if [ -z "$SERVERIP" ]; then
+  echo "Environment variable SERVERIP must be set."; exit 1;
 fi
 
-# Create Rules to forward Traffic
-iptables -t nat -A PREROUTING -p tcp --dport ${HOSTPORT} -j DNAT --to-destination  ${SERVERIP}:${SERVERPORT}
+# IPTables prerouting
+if [ -z "$SERVERPORT" -o -z "$HOSTPORT" ]; then
+  iptables -t nat -A PREROUTING -i eth0 -j DNAT --to-destination ${SERVERIP} > /dev/null 2>&1
+else
+  iptables -t nat -A PREROUTING -p tcp --dport ${HOSTPORT} -j DNAT --to-destination  ${SERVERIP}:${SERVERPORT}
+fi
+
+## ...and check for privileged access real quickly like
+if ! [ $? -eq 0 ]; then
+    echo "Sorry, this container requires the '--cap-add=NET_ADMIN' flag to be set in order to use for iptables"; exit 1;
+fi
+
+# Create rules for postrouting
 iptables -t nat -A POSTROUTING -j MASQUERADE
 
 # Setup masquerade, to allow using the container as a gateway
