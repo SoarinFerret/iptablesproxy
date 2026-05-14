@@ -2,7 +2,7 @@ version: '2'
 
 services:
   test:
-    image: soarinferret/iptablesproxy:latest
+    image: ghcr.io/soarinferret/iptablesproxy:latest
     restart: always
     cap_add:
       - NET_ADMIN
